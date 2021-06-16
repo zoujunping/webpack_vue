@@ -10,6 +10,6 @@ module.exports = WebpackMerge(webpackConfig,{
     contentBase:'../dist'
   },
   plugins:[
-    new Webpack.HotModuleReplacementPlugin()
+    new Webpack.HotModuleReplacementPlugin() //webpack自带的热更新
   ]
 })

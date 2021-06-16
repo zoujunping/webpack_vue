@@ -5,6 +5,8 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin"); //拆分css样�
 const vueLoaderPlugin = require('vue-loader/lib/plugin') //vue-loader 用于解析.vue文件
 const Webpack = require('webpack') //配置webpack-dev-server进行热更新
 const devMode = process.argv.indexOf('--mode=production') === -1;
+// 优化构建webpack
+const TerserPlugin = require('terser-webpack-plugin'); //增强代码压缩 ，并行处理多个子任务，效率会更加的提高
 module.exports = {
     mode:'development', // 开发模式
     entry: path.resolve(__dirname,'../src/main.js'),    // 入口文件(未改前)
@@ -112,7 +114,7 @@ module.exports = {
 			      }
 			    }
 			  ]
-			},
+			}
 	      ]
 	    },
 		 //用于解析.vue文件
@@ -129,7 +131,7 @@ module.exports = {
 	   			filename:'index.html',
 	   			chunks:['main'] //与入口文件对应的模块名
 	        }),
-	   		  new MiniCssExtractPlugin({ //拆分css样式插件
+	   		new MiniCssExtractPlugin({ //拆分css样式插件
 	   		      filename: devMode ? '[name].css' : '[name].[hash].css',
 	   		      chunkFilename: devMode ? '[id].css' : '[id].[hash].css'
 	   		  }),
@@ -139,10 +141,32 @@ module.exports = {
 	   		  //         filename:'header.html',
 	   		  //         chunks:['header'] // 与入口文件对应的模块名
 	   		  //       }),
-	   			new CleanWebpackPlugin(),
-	   			new Webpack.HotModuleReplacementPlugin(),
-	   			new vueLoaderPlugin()
-	   			
-	      ]
+	   		new CleanWebpackPlugin(),
+	   		// new Webpack.HotModuleReplacementPlugin(),
+	   		new vueLoaderPlugin(),
+	   		
+	      ],
+		optimization: {
+				minimize: true,
+				minimizer: [
+					new TerserPlugin({
+						terserOptions: {
+							ecma: 5,
+							warnings: false,
+							parse: {},
+							compress: {},
+							mangle: true, // Note `mangle.properties` is `false` by default.
+							module: false,
+							output: null,
+							toplevel: false,
+							nameCache: null,
+							ie8: false,
+							keep_fnames: false,
+							safari10: true
+						}
+					})
+				]
+		}
+		
 	}
 	  
